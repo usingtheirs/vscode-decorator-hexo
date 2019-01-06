@@ -1,0 +1,45 @@
+{
+	"name": "vscode-decorator-hexo",
+	"description": "Hexo Markdown Syntax Decorator for VS Code",
+	"version": "0.0.1",
+	"publisher": "usingtheirs",
+	"license": "MIT",
+	"engines": {
+		"vscode": "^1.15.0"
+	},
+	"repository": {
+		"url": "https://github.com/usingtheirs/vscode-decorator-hexo"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"*"
+	],
+	"main": "./out/extension.js",
+	"contributes": 
+		"colors": [
+			{
+				"id": "hexo.tag",
+				"description": "Hexo Tag",
+				"defaults": {
+					"dark": "#FF000055",
+					"light": "#FF000055",
+					"highContrast": "#FF000055"
+				}
+			}
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"postinstall": "node ./node_modules/vscode/bin/install"
+	},
+	"devDependencies": {
+		"@types/node": "^8.9.1",
+		"tslint": "^5.11.0",
+		"typescript": "^3.1.3",
+		"vscode": "^1.1.22"
+	}
+}
