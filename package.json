@@ -20,12 +20,30 @@
 	"contributes": {
 		"colors": [
 			{
-				"id": "hexo.tag",
+				"id": "hexo.tag.bg",
 				"description": "Hexo Tag",
 				"defaults": {
-					"dark": "#FF000055",
-					"light": "#FF000055",
-					"highContrast": "#FF000055"
+					"dark": "#883b00",
+					"light": "#ff6f00",
+					"highContrast": "#ff6f00"
+				}
+			},
+			{
+				"id": "hexo.codeblock.textcolor",
+				"description": "Hexo codeblock Tag",
+				"defaults": {
+					"dark": "#ffe10155",
+					"light": "#FFe10155",
+					"highContrast": "#FFe10155"
+				}
+			},
+			{
+				"id": "hexo.comment.textcolor",
+				"description": "Hexo ut_comment Tag",
+				"defaults": {
+					"dark": "#525252fe",
+					"light": "#525252fe",
+					"highContrast": "#525252fe"
 				}
 			}
 		]

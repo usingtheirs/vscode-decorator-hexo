@@ -3,29 +3,28 @@ import * as vscode from 'vscode';
 // this method is called when vs code is activated
 export function activate(context: vscode.ExtensionContext) {
 
-	console.log('decorator sample is activated');
+	console.log('vscode-decorator-hexo is activated');
 
-	// create a decorator type that we use to decorate small numbers
-	const smallNumberDecorationType = vscode.window.createTextEditorDecorationType({
-		borderWidth: '1px',
-		borderStyle: 'solid',
-		overviewRulerColor: 'blue',
-		overviewRulerLane: vscode.OverviewRulerLane.Right,
-		light: {
-			// this color will be used in light color themes
-			borderColor: 'darkblue'
-		},
-		dark: {
-			// this color will be used in dark color themes
-			borderColor: 'lightblue'
-		}
+	const codeblockType = vscode.window.createTextEditorDecorationType({
+		color: { id: 'hexo.codeblock.textcolor' }
 	});
-
-	// create a decorator type that we use to decorate large numbers
-	const largeNumberDecorationType = vscode.window.createTextEditorDecorationType({
-		cursor: 'crosshair',
-		// use a themable color. See package.json for the declaration and default values.
-		backgroundColor: { id: 'hexo.tag' }
+	const commentType = vscode.window.createTextEditorDecorationType({
+		color: { id: 'hexo.comment.textcolor' }
+	});
+	const tagType = vscode.window.createTextEditorDecorationType({
+		backgroundColor: { id: 'hexo.tag.bg' }
+		//borderWidth: '1px',
+		//borderStyle: 'solid',
+		//overviewRulerColor: 'blue',
+		//overviewRulerLane: vscode.OverviewRulerLane.Right,
+		// light: {
+		// 	// this color will be used in light color themes
+		// 	borderColor: 'darkblue'
+		// },
+		// dark: {
+		// 	// this color will be used in dark color themes
+		// 	borderColor: 'lightblue'
+		// }
 	});
 
 	let activeEditor = vscode.window.activeTextEditor;
@@ -44,9 +43,9 @@ export function activate(context: vscode.ExtensionContext) {
 		if (activeEditor && event.document === activeEditor.document) {
 			triggerUpdateDecorations();
 		}
-	}, null, context.subscriptions);
+	}, null, context.subscriptions)
 
-	let timeout : NodeJS.Timer | null = null;
+	var  timeout: NodeJS.Timer | null = null;
 	function triggerUpdateDecorations() {
 		if (timeout) {
 			clearTimeout(timeout);
@@ -54,26 +53,31 @@ export function activate(context: vscode.ExtensionContext) {
 		timeout = setTimeout(updateDecorations, 500);
 	}
 
+	function setDecorations( regEx, matchIndex, textEditorDecorationType,  hoverMessage )
+	{
+		if (!activeEditor) {
+			return;
+		}
+		
+		const text = activeEditor.document.getText();
+		const decorations: vscode.DecorationOptions[] = [];
+		let match;
+		while (match = regEx.exec(text)) {
+			const startPos = activeEditor.document.positionAt(match.index);
+			const endPos = activeEditor.document.positionAt(match.index + match[matchIndex].length);
+			const decoration = { range: new vscode.Range(startPos, endPos), hoverMessage: hoverMessage + ' **' + match[matchIndex] + '**' };
+				decorations.push(decoration);
+		}
+		activeEditor.setDecorations(textEditorDecorationType, decorations);
+	}
+
 	function updateDecorations() {
 		if (!activeEditor) {
 			return;
 		}
-		const regEx = /\d+/g;
-		const text = activeEditor.document.getText();
-		const smallNumbers: vscode.DecorationOptions[] = [];
-		const largeNumbers: vscode.DecorationOptions[] = [];
-		let match;
-		while (match = regEx.exec(text)) {
-			const startPos = activeEditor.document.positionAt(match.index);
-			const endPos = activeEditor.document.positionAt(match.index + match[0].length);
-			const decoration = { range: new vscode.Range(startPos, endPos), hoverMessage: 'Number **' + match[0] + '**' };
-			if (match[0].length < 3) {
-				smallNumbers.push(decoration);
-			} else {
-				largeNumbers.push(decoration);
-			}
-		}
-		activeEditor.setDecorations(smallNumberDecorationType, smallNumbers);
-		activeEditor.setDecorations(largeNumberDecorationType, largeNumbers);
+
+		setDecorations( /{%.*%}/g, 0, tagType, "tag" );
+		setDecorations( /{%\s*?codeblock.*?%}[\s\S]*?(?={%\s*?endcodeblock\s*?%})/g, 0, codeblockType, "codeblock" );
+		setDecorations( /{%\s*?ut_comment\s*?%}[\s\S]*?(?={%\s*?endut_comment\s*?%})/g, 0, commentType, "comment" );
 	}
 }
