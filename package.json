@@ -20,10 +20,10 @@
 	"contributes": {
 		"colors": [
 			{
-				"id": "hexo.tag.bg",
+				"id": "hexo.tag.textcolor",
 				"description": "Hexo Tag",
 				"defaults": {
-					"dark": "#883b00",
+					"dark": "#5a95c5",
 					"light": "#ff6f00",
 					"highContrast": "#ff6f00"
 				}

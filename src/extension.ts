@@ -6,13 +6,15 @@ export function activate(context: vscode.ExtensionContext) {
 	console.log('vscode-decorator-hexo is activated');
 
 	const codeblockType = vscode.window.createTextEditorDecorationType({
-		color: { id: 'hexo.codeblock.textcolor' }
+		color: { id: 'hexo.codeblock.textcolor' },
+		
 	});
 	const commentType = vscode.window.createTextEditorDecorationType({
 		color: { id: 'hexo.comment.textcolor' }
 	});
 	const tagType = vscode.window.createTextEditorDecorationType({
-		backgroundColor: { id: 'hexo.tag.bg' }
+		color: { id: 'hexo.tag.textcolor' }
+		//backgroundColor: { id: 'hexo.tag.textcolor' }
 		//borderWidth: '1px',
 		//borderStyle: 'solid',
 		//overviewRulerColor: 'blue',
@@ -63,8 +65,13 @@ export function activate(context: vscode.ExtensionContext) {
 		const decorations: vscode.DecorationOptions[] = [];
 		let match;
 		while (match = regEx.exec(text)) {
-			const startPos = activeEditor.document.positionAt(match.index);
-			const endPos = activeEditor.document.positionAt(match.index + match[matchIndex].length);
+			// match[0] : whole match
+			// match[1] : the first group
+			// match[2] : the second group
+			// ...
+			const skipPosition = matchIndex < 2 ? 0 : match[matchIndex - 1].length;
+			const startPos = activeEditor.document.positionAt(match.index + skipPosition);
+			const endPos = activeEditor.document.positionAt(match.index + skipPosition + match[matchIndex].length);
 			const decoration = { range: new vscode.Range(startPos, endPos), hoverMessage: hoverMessage + ' **' + match[matchIndex] + '**' };
 				decorations.push(decoration);
 		}
@@ -76,8 +83,8 @@ export function activate(context: vscode.ExtensionContext) {
 			return;
 		}
 
-		setDecorations( /{%.*%}/g, 0, tagType, "tag" );
-		setDecorations( /{%\s*?codeblock.*?%}[\s\S]*?(?={%\s*?endcodeblock\s*?%})/g, 0, codeblockType, "codeblock" );
-		setDecorations( /{%\s*?ut_comment\s*?%}[\s\S]*?(?={%\s*?endut_comment\s*?%})/g, 0, commentType, "comment" );
+		setDecorations( /{%.*?%}/g, 0, tagType, "tag" );
+		setDecorations( /({%\s*?codeblock.*?%})([\s\S]*?)(?={%\s*?endcodeblock\s*?%})/g, 2, codeblockType, "codeblock" );
+		setDecorations( /({%\s*?ut_comment\s*?%})([\s\S]*?)(?={%\s*?endut_comment\s*?%})/g, 2, commentType, "comment" );
 	}
 }
